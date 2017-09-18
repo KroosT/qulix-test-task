@@ -1,8 +1,7 @@
 package by.kroos.gifsearch;
 
-import android.content.Context;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatEditText;
@@ -11,8 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.inputmethod.InputMethodManager;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.yalantis.jellytoolbar.listener.JellyListener;
 import com.yalantis.jellytoolbar.widget.JellyToolbar;
@@ -27,7 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final String API_KEY = "fWieUtS84ZkjIWupFAQvqpUapoYj1k29";
-    private static final String BASE_URL = "http://api.giphy.com/v1/gifs/";
+    private static final int TYPE_SEARCH = 1;
+    private static final int TYPE_TRENDING = 2;
     private ApiInterface apiInterface;
 
     JellyToolbar jellyToolbar;
@@ -35,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     RecyclerAdapter recyclerAdapter;
     ImageView imageView;
+    TextView titleTextView;
+    TextView toolbarTextView;
+    String request;
 
 
     @Override
@@ -43,18 +48,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main);
 
         imageView = (ImageView) findViewById(R.id.imageView);
+        titleTextView = (TextView) findViewById(R.id.title);
+        toolbarTextView = (TextView) findViewById(R.id.toolbar_title);
 
         jellyToolbar = (JellyToolbar) findViewById(R.id.toolbar);
         jellyToolbar.setJellyListener(jellyListener);
 
         editText = (AppCompatEditText) LayoutInflater.from(this).inflate(R.layout.edit_text, null);
         editText.setBackgroundResource(R.color.colorTransparent);
+        editText.setTextColor(ContextCompat.getColor(this, R.color.white));
         jellyToolbar.setContentView(editText);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         apiInterface = ApiService.getClient().create(ApiInterface.class);
+
+        getGIFs(TYPE_TRENDING);
 
     }
 
@@ -64,26 +74,67 @@ public class MainActivity extends AppCompatActivity {
             if (TextUtils.isEmpty(editText.getText())) {
                 jellyToolbar.collapse();
             } else {
-                String request = editText.getText().toString();
+                request = editText.getText().toString();
                 editText.getText().clear();
                 jellyToolbar.collapse();
-
-                Call<Feed> call = apiInterface.getStuff(request, API_KEY);
-                call.enqueue(new Callback<Feed>() {
-                    @Override
-                    public void onResponse(@NonNull Call<Feed> call, @NonNull Response<Feed> response) {
-                        Log.d(TAG, "onResponse: Server Response: " + response.toString());
-                        List<Data> data = response.body().getData();
-                        recyclerAdapter = new RecyclerAdapter(data, getApplication());
-                        recyclerView.setAdapter(recyclerAdapter);
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<Feed> call, @NonNull Throwable t) {
-                        Log.e(TAG, "Something went wrong");
-                    }
-                });
+                getGIFs(TYPE_SEARCH);
             }
         }
+
+        @Override
+        public void onToolbarExpandingStarted() {
+            super.onToolbarExpandingStarted();
+            toolbarTextView.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
+        public void onToolbarCollapsingStarted() {
+            super.onToolbarCollapsingStarted();
+            toolbarTextView.setVisibility(View.VISIBLE);
+        }
     };
+
+    private void getGIFs(int request_type) {
+
+        Call<Feed> call;
+        switch (request_type) {
+            case TYPE_SEARCH:
+                titleTextView.setText(getString(R.string.gifs_for).concat(request));
+                call = apiInterface.getSearch(request, API_KEY);
+                getFeed(call);
+                break;
+            case TYPE_TRENDING:
+                titleTextView.setText(R.string.trending_now);
+                call = apiInterface.getTrendingNow(API_KEY);
+                getFeed(call);
+                break;
+            default:
+                titleTextView.setText(R.string.trending_now);
+                call = apiInterface.getTrendingNow(API_KEY);
+                getFeed(call);
+                break;
+        }
+
+    }
+
+    private void getFeed(Call<Feed> call) {
+        call.enqueue(new Callback<Feed>() {
+            @Override
+            public void onResponse(@NonNull Call<Feed> call, @NonNull Response<Feed> response) {
+                Log.d(TAG, "onResponse: Server Response: " + response.toString());
+                List<Data> data = response.body().getData();
+                if (data != null) {
+                    recyclerAdapter = new RecyclerAdapter(data, getApplication());
+                    recyclerView.setAdapter(recyclerAdapter);
+                } else {
+                    titleTextView.setText(getString(R.string.no_gifs).concat(request));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Feed> call, @NonNull Throwable t) {
+                Log.e(TAG, "Something went wrong");
+            }
+        });
+    }
 }

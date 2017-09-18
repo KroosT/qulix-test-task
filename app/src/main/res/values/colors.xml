@@ -6,4 +6,5 @@
     <color name="colorStart">#FF4081</color>
     <color name="colorEnd">#FF4084</color>
     <color name="colorTransparent">#00000000</color>
+    <color name="white">#FFFFFF</color>
 </resources>

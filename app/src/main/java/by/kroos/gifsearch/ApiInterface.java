@@ -11,9 +11,9 @@ import retrofit2.http.Query;
 public interface ApiInterface {
 
     @GET("search")
-    Call<Feed> getStuff(@Query("q") String request, @Query("api_key") String api_key);
+    Call<Feed> getSearch(@Query("q") String request, @Query("api_key") String api_key);
 
-    @GET("{id}&api_key=fWieUtS84ZkjIWupFAQvqpUapoYj1k29")
-    Call<Data> getGIF();
+    @GET("trending")
+    Call<Feed> getTrendingNow(@Query("api_key") String api_key);
 
 }

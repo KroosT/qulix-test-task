@@ -25,12 +25,10 @@ class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder>
     private Context context;
 
     private List<Data> data;
-    private List loadedGifs;
 
     RecyclerAdapter(List<Data> data, Context context) {
         this.data = data;
         this.context = context;
-        loadedGifs = new ArrayList();
     }
 
     @Override
