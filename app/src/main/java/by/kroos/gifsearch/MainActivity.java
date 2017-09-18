@@ -1,5 +1,6 @@
 package by.kroos.gifsearch;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         titleTextView = (TextView) findViewById(R.id.title);
         toolbarTextView = (TextView) findViewById(R.id.toolbar_title);
 
+        toolbarTextView.setOnClickListener(onToolbarTitleClick);
+
         jellyToolbar = (JellyToolbar) findViewById(R.id.toolbar);
         jellyToolbar.setJellyListener(jellyListener);
 
@@ -68,9 +74,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    View.OnClickListener onToolbarTitleClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            getGIFs(TYPE_TRENDING);
+        }
+    };
+
     private JellyListener jellyListener = new JellyListener() {
         @Override
         public void onCancelIconClicked() {
+            hideSoftKeyboard(editText);
             if (TextUtils.isEmpty(editText.getText())) {
                 jellyToolbar.collapse();
             } else {
@@ -84,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onToolbarExpandingStarted() {
             super.onToolbarExpandingStarted();
+            showSoftKeyboard(editText);
             toolbarTextView.setVisibility(View.INVISIBLE);
         }
 
@@ -99,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         Call<Feed> call;
         switch (request_type) {
             case TYPE_SEARCH:
-                titleTextView.setText(getString(R.string.gifs_for).concat(request));
+                titleTextView.setText(getString(R.string.gifs_for).concat(" ").concat(request));
                 call = apiInterface.getSearch(request, API_KEY);
                 getFeed(call);
                 break;
@@ -123,18 +138,34 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<Feed> call, @NonNull Response<Feed> response) {
                 Log.d(TAG, "onResponse: Server Response: " + response.toString());
                 List<Data> data = response.body().getData();
-                if (data != null) {
+                if (data.size() != 0) {
                     recyclerAdapter = new RecyclerAdapter(data, getApplication());
                     recyclerView.setAdapter(recyclerAdapter);
                 } else {
-                    titleTextView.setText(getString(R.string.no_gifs).concat(request));
+                    recyclerAdapter = new RecyclerAdapter(data, getApplication());
+                    recyclerView.setAdapter(recyclerAdapter);
+                    titleTextView.setText(getString(R.string.no_gifs).concat(" ").concat(request));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Feed> call, @NonNull Throwable t) {
                 Log.e(TAG, "Something went wrong");
+                Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT)
+                        .show();
             }
         });
+    }
+
+    private void showSoftKeyboard(View view){
+        if(view.requestFocus()){
+            InputMethodManager imm =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+
+    private void hideSoftKeyboard(View view){
+        InputMethodManager imm =(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

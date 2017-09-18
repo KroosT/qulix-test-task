@@ -8,25 +8,11 @@ import com.google.gson.annotations.SerializedName;
 
 class Data {
 
-    @SerializedName("username")
-    private String author;
-
-    @SerializedName("embed_url")
-    private String embed_url;
-
     @SerializedName("id")
     private String id;
 
     @SerializedName("images")
     private Images images;
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public String getEmbed_url() {
-        return embed_url;
-    }
 
     public String getId() {
         return id;
