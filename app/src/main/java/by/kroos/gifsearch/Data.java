@@ -18,7 +18,7 @@ class Data {
         return id;
     }
 
-    public Images getImages() {
+    Images getImages() {
         return images;
     }
 }

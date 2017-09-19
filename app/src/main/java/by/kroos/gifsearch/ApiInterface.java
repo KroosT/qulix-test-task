@@ -8,7 +8,7 @@ import retrofit2.http.Query;
  * Created by anton on 17.09.2017.
  */
 
-public interface ApiInterface {
+interface ApiInterface {
 
     @GET("search")
     Call<Feed> getSearch(@Query("q") String request, @Query("api_key") String api_key);

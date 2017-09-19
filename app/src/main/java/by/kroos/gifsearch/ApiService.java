@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by anton on 17.09.2017.
  */
 
-public class ApiService {
+class ApiService {
 
     private static final String BASE_URL = "http://api.giphy.com/v1/gifs/";
     private static Retrofit retrofit = null;

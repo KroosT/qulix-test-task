@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Created by anton on 17.09.2017.
  */
 
-public class Feed {
+class Feed {
 
     @SerializedName("data")
     private ArrayList<Data> data;

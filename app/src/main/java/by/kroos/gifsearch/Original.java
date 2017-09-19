@@ -6,12 +6,12 @@ import com.google.gson.annotations.SerializedName;
  * Created by anton on 17.09.2017.
  */
 
-public class Original {
+class Original {
 
     @SerializedName("url")
     private String url;
 
-    public String getUrl() {
+    String getUrl() {
         return url;
     }
 }
