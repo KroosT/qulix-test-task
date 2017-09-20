@@ -138,18 +138,24 @@ public class MainActivity extends AppCompatActivity {
                 List<Data> data = response.body().getData();
                 if (data.size() != 0) {
                     recyclerAdapter = new RecyclerAdapter(data, getApplication());
+                    recyclerView.setBackgroundColor(
+                            ContextCompat.getColor(getApplicationContext(), R.color.black));
                     recyclerView.setAdapter(recyclerAdapter);
                 } else {
                     recyclerAdapter = new RecyclerAdapter(data, getApplication());
-                    recyclerView.setAdapter(recyclerAdapter);
+                    recyclerView.setBackgroundColor(
+                            ContextCompat.getColor(getApplicationContext(), R.color.white));
                     titleTextView.setText(getString(R.string.no_gifs).concat(" ").concat(request));
+                    recyclerView.setAdapter(recyclerAdapter);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Feed> call, @NonNull Throwable t) {
                 Log.e(TAG, "Something went wrong");
-                Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT)
+                Toast.makeText(getApplicationContext(),
+                        "Something went wrong. Check your connection to Internet"
+                        , Toast.LENGTH_SHORT)
                         .show();
             }
         });
