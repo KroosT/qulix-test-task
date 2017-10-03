@@ -20,23 +20,23 @@ import java.util.List;
 class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
 
     private static final String TAG = "RecyclerAdapter";
-    private Context context;
+    private final Context context;
 
-    private List<Data> data;
+    private final List<Data> data;
 
-    RecyclerAdapter(List<Data> data, Context context) {
+    RecyclerAdapter(final List<Data> data, final Context context) {
         this.data = data;
         this.context = context;
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+    public MyViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         return new MyViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, final int position) {
         Glide.with(context)
                 .load(data.get(position).getImages().getOriginal().getUrl())
                 .apply(RequestOptions.placeholderOf(R.mipmap.ic_downloading))
@@ -51,9 +51,9 @@ class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder>
 
     class MyViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView imageView;
+        private final ImageView imageView;
 
-        MyViewHolder(View itemView) {
+        MyViewHolder(final View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageView);
         }

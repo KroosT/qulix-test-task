@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -74,12 +74,12 @@ public class MainActivity extends AppCompatActivity {
 
     View.OnClickListener onToolbarTitleClick = new View.OnClickListener() {
         @Override
-        public void onClick(View view) {
+        public void onClick(final View view) {
             getGIFs(TYPE_TRENDING);
         }
     };
 
-    private JellyListener jellyListener = new JellyListener() {
+    private final JellyListener jellyListener = new JellyListener() {
         @Override
         public void onCancelIconClicked() {
             hideSoftKeyboard(editText);
@@ -107,9 +107,9 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void getGIFs(RequestType request_type) {
+    private void getGIFs(final RequestType request_type) {
 
-        Call<Feed> call;
+        final Call<Feed> call;
         switch (request_type) {
             case TYPE_SEARCH:
                 titleTextView.setText(getString(R.string.gifs_for).concat(" ").concat(request));
@@ -130,12 +130,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void getFeed(Call<Feed> call) {
+    private void getFeed(final Call<Feed> call) {
         call.enqueue(new Callback<Feed>() {
             @Override
-            public void onResponse(@NonNull Call<Feed> call, @NonNull Response<Feed> response) {
+            public void onResponse(@NonNull final Call<Feed> call, @NonNull final Response<Feed> response) {
                 Log.d(TAG, "onResponse: Server Response: " + response.toString());
-                List<Data> data = response.body().getData();
+                final List<Data> data = response.body().getData();
                 if (data.size() != 0) {
                     recyclerAdapter = new RecyclerAdapter(data, getApplication());
                     recyclerView.setBackgroundColor(
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<Feed> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull final Call<Feed> call, @NonNull final Throwable t) {
                 Log.e(TAG, "Something went wrong");
                 Toast.makeText(getApplicationContext(),
                         "Something went wrong. Check your connection to Internet"
@@ -161,15 +161,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void showSoftKeyboard(View view){
+    private void showSoftKeyboard(final View view){
         if(view.requestFocus()){
-            InputMethodManager imm =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            final InputMethodManager imm =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
         }
     }
 
-    private void hideSoftKeyboard(View view){
-        InputMethodManager imm =(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+    private void hideSoftKeyboard(final View view){
+        final InputMethodManager imm =(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
