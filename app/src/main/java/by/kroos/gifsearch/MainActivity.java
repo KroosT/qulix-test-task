@@ -26,12 +26,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static by.kroos.gifsearch.RequestType.*;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final String API_KEY = "fWieUtS84ZkjIWupFAQvqpUapoYj1k29";
-    private static final int TYPE_SEARCH = 1;
-    private static final int TYPE_TRENDING = 2;
     private ApiInterface apiInterface;
 
     JellyToolbar jellyToolbar;
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void getGIFs(int request_type) {
+    private void getGIFs(RequestType request_type) {
 
         Call<Feed> call;
         switch (request_type) {
