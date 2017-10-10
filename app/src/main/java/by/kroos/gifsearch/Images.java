@@ -2,16 +2,20 @@ package by.kroos.gifsearch;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by anton on 17.09.2017.
- */
-
 class Images {
 
     @SerializedName("original")
-    private Original mOriginal;
+    private final Original mOriginal;
+
+    Images(final Images images) {
+        if (images == null) {
+            mOriginal = new Original();
+        } else {
+            mOriginal = images.getOriginal();
+        }
+    }
 
     Original getOriginal() {
-        return mOriginal;
+        return new Original(mOriginal);
     }
 }
