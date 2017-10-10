@@ -9,9 +9,9 @@ import com.google.gson.annotations.SerializedName;
 class Images {
 
     @SerializedName("original")
-    private Original original;
+    private Original mOriginal;
 
     Original getOriginal() {
-        return original;
+        return mOriginal;
     }
 }
