@@ -18,7 +18,6 @@ class Original {
             mUrl = original.getUrl();
         }
     }
-    private String mUrl;
 
     String getUrl() {
         return mUrl + "";
