@@ -20,13 +20,13 @@ import java.util.List;
 class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
 
     private static final String TAG = "RecyclerAdapter";
-    private final Context context;
+    private final Context mContext;
 
-    private final List<Data> data;
+    private final List<Data> mData;
 
     RecyclerAdapter(final List<Data> data, final Context context) {
-        this.data = data;
-        this.context = context;
+        this.mData = data;
+        this.mContext = context;
     }
 
     @Override
@@ -37,8 +37,8 @@ class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder>
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        Glide.with(context)
-                .load(data.get(position).getImages().getOriginal().getUrl())
+        Glide.with(mContext)
+                .load(mData.get(position).getImages().getOriginal().getUrl())
                 .apply(RequestOptions.placeholderOf(R.mipmap.ic_downloading))
                 .into(holder.imageView);
         Log.d(TAG, "OnBind2");
@@ -46,7 +46,7 @@ class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder>
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return mData.size();
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {

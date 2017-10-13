@@ -2,7 +2,6 @@ package by.kroos.gifsearch;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,9 +11,9 @@ import java.util.List;
 class Feed {
 
     @SerializedName("data")
-    private List<Data> data;
+    private List<Data> mData;
 
     public List<Data> getData() {
-        return data;
+        return mData;
     }
 }

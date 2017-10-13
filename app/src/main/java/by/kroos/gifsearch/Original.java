@@ -9,9 +9,9 @@ import com.google.gson.annotations.SerializedName;
 class Original {
 
     @SerializedName("url")
-    private String url;
+    private String mUrl;
 
     String getUrl() {
-        return url;
+        return mUrl;
     }
 }

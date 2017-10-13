@@ -32,16 +32,16 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final String API_KEY = "fWieUtS84ZkjIWupFAQvqpUapoYj1k29";
-    private ApiInterface apiInterface;
+    private ApiInterface mApiInterface;
 
-    JellyToolbar jellyToolbar;
-    AppCompatEditText editText;
-    RecyclerView recyclerView;
-    RecyclerAdapter recyclerAdapter;
-    ImageView imageView;
-    TextView titleTextView;
-    TextView toolbarTextView;
-    String request;
+    JellyToolbar mJellyToolbar;
+    AppCompatEditText mEditText;
+    RecyclerView mRecyclerView;
+    RecyclerAdapter mRecyclerAdapter;
+    ImageView mImageView;
+    TextView mTitleTextView;
+    TextView mToolbarTextView;
+    String mRequest;
 
 
     @Override
@@ -49,24 +49,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        imageView = (ImageView) findViewById(R.id.imageView);
-        titleTextView = (TextView) findViewById(R.id.title);
-        toolbarTextView = (TextView) findViewById(R.id.toolbar_title);
+        mImageView = (ImageView) findViewById(R.id.imageView);
+        mTitleTextView = (TextView) findViewById(R.id.title);
+        mToolbarTextView = (TextView) findViewById(R.id.toolbar_title);
 
-        toolbarTextView.setOnClickListener(onToolbarTitleClick);
+        mToolbarTextView.setOnClickListener(onToolbarTitleClick);
 
-        jellyToolbar = (JellyToolbar) findViewById(R.id.toolbar);
-        jellyToolbar.setJellyListener(jellyListener);
+        mJellyToolbar = (JellyToolbar) findViewById(R.id.toolbar);
+        mJellyToolbar.setJellyListener(jellyListener);
 
-        editText = (AppCompatEditText) LayoutInflater.from(this).inflate(R.layout.edit_text, null);
-        editText.setBackgroundResource(R.color.colorTransparent);
-        editText.setTextColor(ContextCompat.getColor(this, R.color.white));
-        jellyToolbar.setContentView(editText);
+        mEditText = (AppCompatEditText) LayoutInflater.from(this).inflate(R.layout.edit_text, null);
+        mEditText.setBackgroundResource(R.color.colorTransparent);
+        mEditText.setTextColor(ContextCompat.getColor(this, R.color.white));
+        mJellyToolbar.setContentView(mEditText);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        apiInterface = ApiService.getClient().create(ApiInterface.class);
+        mApiInterface = ApiService.getClient().create(ApiInterface.class);
 
         getGIFs(TYPE_TRENDING);
 
@@ -82,13 +82,13 @@ public class MainActivity extends AppCompatActivity {
     private final JellyListener jellyListener = new JellyListener() {
         @Override
         public void onCancelIconClicked() {
-            hideSoftKeyboard(editText);
-            if (TextUtils.isEmpty(editText.getText())) {
-                jellyToolbar.collapse();
+            hideSoftKeyboard(mEditText);
+            if (TextUtils.isEmpty(mEditText.getText())) {
+                mJellyToolbar.collapse();
             } else {
-                request = editText.getText().toString();
-                editText.getText().clear();
-                jellyToolbar.collapse();
+                mRequest = mEditText.getText().toString();
+                mEditText.getText().clear();
+                mJellyToolbar.collapse();
                 getGIFs(TYPE_SEARCH);
             }
         }
@@ -96,14 +96,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onToolbarExpandingStarted() {
             super.onToolbarExpandingStarted();
-            showSoftKeyboard(editText);
-            toolbarTextView.setVisibility(View.INVISIBLE);
+            showSoftKeyboard(mEditText);
+            mToolbarTextView.setVisibility(View.INVISIBLE);
         }
 
         @Override
         public void onToolbarCollapsingStarted() {
             super.onToolbarCollapsingStarted();
-            toolbarTextView.setVisibility(View.VISIBLE);
+            mToolbarTextView.setVisibility(View.VISIBLE);
         }
     };
 
@@ -112,18 +112,18 @@ public class MainActivity extends AppCompatActivity {
         final Call<Feed> call;
         switch (request_type) {
             case TYPE_SEARCH:
-                titleTextView.setText(getString(R.string.gifs_for).concat(" ").concat(request));
-                call = apiInterface.getSearch(request, API_KEY);
+                mTitleTextView.setText(getString(R.string.gifs_for).concat(" ").concat(mRequest));
+                call = mApiInterface.getSearch(mRequest, API_KEY);
                 getFeed(call);
                 break;
             case TYPE_TRENDING:
-                titleTextView.setText(R.string.trending_now);
-                call = apiInterface.getTrendingNow(API_KEY);
+                mTitleTextView.setText(R.string.trending_now);
+                call = mApiInterface.getTrendingNow(API_KEY);
                 getFeed(call);
                 break;
             default:
-                titleTextView.setText(R.string.trending_now);
-                call = apiInterface.getTrendingNow(API_KEY);
+                mTitleTextView.setText(R.string.trending_now);
+                call = mApiInterface.getTrendingNow(API_KEY);
                 getFeed(call);
                 break;
         }
@@ -137,16 +137,16 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "onResponse: Server Response: " + response.toString());
                 final List<Data> data = response.body().getData();
                 if (data.size() != 0) {
-                    recyclerAdapter = new RecyclerAdapter(data, getApplication());
-                    recyclerView.setBackgroundColor(
+                    mRecyclerAdapter = new RecyclerAdapter(data, getApplication());
+                    mRecyclerView.setBackgroundColor(
                             ContextCompat.getColor(getApplicationContext(), R.color.black));
-                    recyclerView.setAdapter(recyclerAdapter);
+                    mRecyclerView.setAdapter(mRecyclerAdapter);
                 } else {
-                    recyclerAdapter = new RecyclerAdapter(data, getApplication());
-                    recyclerView.setBackgroundColor(
+                    mRecyclerAdapter = new RecyclerAdapter(data, getApplication());
+                    mRecyclerView.setBackgroundColor(
                             ContextCompat.getColor(getApplicationContext(), R.color.white));
-                    titleTextView.setText(getString(R.string.no_gifs).concat(" ").concat(request));
-                    recyclerView.setAdapter(recyclerAdapter);
+                    mTitleTextView.setText(getString(R.string.no_gifs).concat(" ").concat(mRequest));
+                    mRecyclerView.setAdapter(mRecyclerAdapter);
                 }
             }
 
