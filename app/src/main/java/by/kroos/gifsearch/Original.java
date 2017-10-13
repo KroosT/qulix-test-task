@@ -2,16 +2,24 @@ package by.kroos.gifsearch;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by anton on 17.09.2017.
- */
-
 class Original {
 
     @SerializedName("url")
-    private String url;
+    private final String url;
+
+    Original() {
+        url = "";
+    }
+
+    Original(final Original original) {
+        if (original == null) {
+            url = "";
+        } else {
+            url = original.getUrl();
+        }
+    }
 
     String getUrl() {
-        return url;
+        return url + "";
     }
 }
