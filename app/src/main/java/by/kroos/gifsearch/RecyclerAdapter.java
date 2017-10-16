@@ -13,16 +13,12 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
-/**
- * Created by anton on 17.09.2017.
- */
-
 class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
 
     private static final String TAG = "RecyclerAdapter";
     private final Context mContext;
 
-    private final List<Data> mData;
+    private List<Data> mData;
 
     RecyclerAdapter(final List<Data> data, final Context context) {
         this.mData = data;
@@ -57,5 +53,9 @@ class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder>
             super(itemView);
             imageView = itemView.findViewById(R.id.imageView);
         }
+    }
+
+    public void updateData(final List<Data> data) {
+        mData = data;
     }
 }

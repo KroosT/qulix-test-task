@@ -1,6 +1,5 @@
 package by.kroos.gifsearch;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +11,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,8 +18,10 @@ import android.widget.Toast;
 import com.yalantis.jellytoolbar.listener.JellyListener;
 import com.yalantis.jellytoolbar.widget.JellyToolbar;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import by.kroos.gifsearch.Utils.ViewUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     TextView mTitleTextView;
     TextView mToolbarTextView;
     String mRequest;
+    List<Data> mDataList;
 
 
     @Override
@@ -68,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
 
         mApiInterface = ApiService.getClient().create(ApiInterface.class);
 
+        mDataList = new ArrayList<>();
+        mRecyclerAdapter = new RecyclerAdapter(mDataList, this);
+        mRecyclerView.setAdapter(mRecyclerAdapter);
+
         getGIFs(TYPE_TRENDING);
 
     }
@@ -82,21 +87,19 @@ public class MainActivity extends AppCompatActivity {
     private final JellyListener jellyListener = new JellyListener() {
         @Override
         public void onCancelIconClicked() {
-            hideSoftKeyboard(mEditText);
-            if (TextUtils.isEmpty(mEditText.getText())) {
-                mJellyToolbar.collapse();
-            } else {
+            ViewUtils.hideSoftKeyboard(mEditText);
+            if (!TextUtils.isEmpty(mEditText.getText())) {
                 mRequest = mEditText.getText().toString();
                 mEditText.getText().clear();
-                mJellyToolbar.collapse();
                 getGIFs(TYPE_SEARCH);
             }
+            mJellyToolbar.collapse();
         }
 
         @Override
         public void onToolbarExpandingStarted() {
             super.onToolbarExpandingStarted();
-            showSoftKeyboard(mEditText);
+            ViewUtils.showSoftKeyboard(mEditText);
             mToolbarTextView.setVisibility(View.INVISIBLE);
         }
 
@@ -114,20 +117,17 @@ public class MainActivity extends AppCompatActivity {
             case TYPE_SEARCH:
                 mTitleTextView.setText(getString(R.string.gifs_for).concat(" ").concat(mRequest));
                 call = mApiInterface.getSearch(mRequest, API_KEY);
-                getFeed(call);
                 break;
             case TYPE_TRENDING:
                 mTitleTextView.setText(R.string.trending_now);
                 call = mApiInterface.getTrendingNow(API_KEY);
-                getFeed(call);
                 break;
             default:
                 mTitleTextView.setText(R.string.trending_now);
                 call = mApiInterface.getTrendingNow(API_KEY);
-                getFeed(call);
                 break;
         }
-
+        getFeed(call);
     }
 
     private void getFeed(final Call<Feed> call) {
@@ -135,18 +135,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull final Call<Feed> call, @NonNull final Response<Feed> response) {
                 Log.d(TAG, "onResponse: Server Response: " + response.toString());
-                final List<Data> data = response.body().getData();
-                if (data.size() != 0) {
-                    mRecyclerAdapter = new RecyclerAdapter(data, getApplication());
+                mDataList = response.body().getData();
+                mRecyclerAdapter.updateData(mDataList);
+                mRecyclerAdapter.notifyDataSetChanged();
+                if (mDataList.size() != 0) {
                     mRecyclerView.setBackgroundColor(
                             ContextCompat.getColor(getApplicationContext(), R.color.black));
-                    mRecyclerView.setAdapter(mRecyclerAdapter);
                 } else {
-                    mRecyclerAdapter = new RecyclerAdapter(data, getApplication());
                     mRecyclerView.setBackgroundColor(
                             ContextCompat.getColor(getApplicationContext(), R.color.white));
                     mTitleTextView.setText(getString(R.string.no_gifs).concat(" ").concat(mRequest));
-                    mRecyclerView.setAdapter(mRecyclerAdapter);
                 }
             }
 
@@ -159,17 +157,5 @@ public class MainActivity extends AppCompatActivity {
                         .show();
             }
         });
-    }
-
-    private void showSoftKeyboard(final View view){
-        if(view.requestFocus()){
-            final InputMethodManager imm =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
-        }
-    }
-
-    private void hideSoftKeyboard(final View view){
-        final InputMethodManager imm =(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
